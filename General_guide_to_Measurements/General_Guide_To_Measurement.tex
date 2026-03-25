@@ -21,123 +21,37 @@
 \tableofcontents
 \newpage
 
+\include{Sections/Author/Author}
 \include{Sections/Purpose/Purpose}
-
 \include{Sections/Intro/Intro}
+\include{Sections/Metrology/Metrology}
+\include{Sections/Scope/Scope}
+\include{Sections/Preparation/Preparation}
+\include{Sections/During_Measurements.tex/During}
+\include{Sections/After_Measurements/After_Measurements}
 
- \include{Sections/Metrology/Metrology}
-
-\section{Scope}
-This guide applies to all students and researchers collecting experimental datasets in the APMS laboratories, covering analog, digital, RF, and AI-related measurements.
 
 \section{References}
 \begin{itemize}[noitemsep]
-    \item IEEE Data Description Principles
-    \item ISO/IEC 17025: General requirements for the competence of testing and calibration laboratories
-    \item BIPM GUM: \textit{Guide to the Expression of Uncertainty in Measurement}
-    \item Instrument datasheets and calibration certificates
+    \item \textbf{ISO/IEC 17025:} \textit{General requirements for the competence of testing and calibration laboratories}
+    \item \textbf{BIPM GUM:} \textit{Guide to the Expression of Uncertainty in Measurement}
+    \item \textbf{DANAK AB11:} Measurement uncertainty in calibration
+    \item \textbf{DANAK AB12:} Evaluation and reporting of measurement uncertainty
 \end{itemize}
+
+
 
 \section{Roles and Responsibilities}
-\begin{itemize}[noitemsep]
-    \item \textbf{Student:} Performs measurements according to procedure, logs data, and observes anomalies.
-    \item \textbf{Supervisor:} Reviews experimental protocols, validates measurements, and approves datasets.
-    \item \textbf{Lab Manager/Technical Mentor:} Ensures instruments are calibrated, procedures are up-to-date, and training is provided.
-\end{itemize}
 
-\section{Preparation Before Measurement}
-\begin{enumerate}[label=\arabic*.]
-    \item Define measurement goals and required accuracy.
-    \item Select appropriate instruments and sensors, ensuring calibration and traceability.
-    \item Check instrument specifications: range, linearity, noise, resolution, and sample rate.
-    \item Draft experimental protocol:
-    \begin{itemize}
-        \item Step-by-step measurement plan
-        \item Identify critical variables and sources of error
-        \item Plan repetitions to quantify repeatability
-    \end{itemize}
-    \item Log calibration procedure and reference standards used.
-\end{enumerate}
+\subsection{Student}
+The student is responsible for performing the measurements, developing the measurement procedure, logging all data, and observing any anomalies. In general, the student ensures that the measurements are conducted correctly, the data is accurately collected, and all records are properly stored.
 
-\section{During Measurement}
-\begin{enumerate}[label=\arabic*.]
-    \item Record date, time, experiment ID, and operator name.
-    \item Log instrument settings, configurations, and environmental conditions.
-    \item Observe and record anomalies, drift, or unexpected behavior.
-    \item Repeat measurements to quantify variability and reduce bias.
-\end{enumerate}
+\subsection{Supervisor}
+The supervisor provides guidance to the student as needed. This may include assistance with measurement setup, understanding the underlying principles, determining what to measure, and how to describe or document the measurements. The supervisor also reviews the procedures and ensures that the resulting data is reliable and reproducible.
 
-\section{After Measurement}
-\begin{enumerate}[label=\arabic*.]
-    \item Preserve raw data intact in designated open formats (e.g., HDF5, CSV).
-    \item Perform initial data cleaning if necessary (document any modifications).
-    \item Estimate measurement uncertainty:
-    \begin{itemize}
-        \item Identify sources (instrument, method, environment, operator)
-        \item Use Type A (statistical) and Type B (systematic) methods
-        \item Combine uncertainties according to GUM guidelines
-    \end{itemize}
-    \item Validate data completeness and quality.
-    \item Document assumptions, limitations, and known biases.
-\end{enumerate}
+\section{Miscellaneous}
+As a final note, while all of this may initially seem “a bit much,” once you become familiar with the world of Metrology, it is both exciting and fascinating. The field is filled with impressive discoveries and achievements. One example that particularly fascinates me is the Kibble balance, which links the kilogram to Planck's constant through the electromagnetic force -a truly remarkable accomplishment.
 
-\section{Measurement Procedure Template}
-\subsection*{Title and Purpose}
-\textit{E.g., Calibration and Data Collection Procedure for RF Power Measurements}
-
-\subsection*{Equipment List}
-Include serial numbers, calibration status, and traceability references.
-
-\subsection*{Environmental Conditions}
-Temperature, humidity, vibration, and EM interference considerations.
-
-\subsection*{Step-by-Step Procedure}
-\begin{enumerate}[label=\arabic*.]
-    \item Pre-measurement instrument warm-up and verification.
-    \item Connection diagram setup.
-    \item Measurement steps with instrument settings.
-    \item Repetition and randomization of measurements.
-    \item Observation logging (drift, noise, anomalies).
-\end{enumerate}
-
-\subsection*{Uncertainty Evaluation}
-Provide formulas or methods for combining uncertainties from all sources.
-
-\subsection*{Data Logging and Documentation}
-Templates for experiment ID, date/time, instrument settings, raw data path, and observation notes.
-
-\subsection*{Verification and Validation}
-Baseline checks, cross-checks with known standards, and repeatability verification.
-
-\section{Key Principles}
-\begin{itemize}[noitemsep]
-    \item Traceability is essential: link measurements to references.
-    \item Quantify uncertainty rather than assuming it.
-    \item Document rigorously for reproducibility.
-    \item Apply critical thinking: check that results make sense physically.
-\end{itemize}
-
-\section{Appendices}
-\subsection*{Example Uncertainty Budget Table}
-\begin{longtable}{lccc}
-\toprule
-Source & Type (A/B) & Value & Notes \\
-\midrule
-Instrument Resolution & B & 0.02\% & Manufacturer datasheet \\
-Temperature Drift & B & 0.01\% & Measured over range \\
-Repetition Variability & A & 0.03\% & Statistical analysis \\
-\bottomrule
-\end{longtable}
-
-\subsection*{Observation Log Template}
-\begin{tabular}{lll}
-\toprule
-Time & Observation & Notes \\
-\midrule
- & & \\
- & & \\
- & & \\
-\bottomrule
-\end{tabular}
+The following section contains references to guides on uncertainty calculations, measurement procedures, and other resources for further study.
 
 \end{document}

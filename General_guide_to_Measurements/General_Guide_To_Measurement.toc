@@ -1,13 +1,24 @@
-\contentsline {section}{\numberline {1}Purpose}{2}{section.1}%
-\contentsline {section}{\numberline {2}Intro}{3}{section.2}%
-\contentsline {section}{\numberline {3}Core Concepts in Metrology}{4}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Responsibility of the Experimenter}{4}{subsection.3.1}%
-\contentsline {section}{\numberline {4}Scope}{6}{section.4}%
-\contentsline {section}{\numberline {5}References}{6}{section.5}%
-\contentsline {section}{\numberline {6}Roles and Responsibilities}{6}{section.6}%
-\contentsline {section}{\numberline {7}Preparation Before Measurement}{6}{section.7}%
-\contentsline {section}{\numberline {8}During Measurement}{6}{section.8}%
-\contentsline {section}{\numberline {9}After Measurement}{7}{section.9}%
-\contentsline {section}{\numberline {10}Measurement Procedure Template}{7}{section.10}%
-\contentsline {section}{\numberline {11}Key Principles}{8}{section.11}%
-\contentsline {section}{\numberline {12}Appendices}{8}{section.12}%
+\contentsline {section}{\numberline {1}Purpose}{3}{section.1}%
+\contentsline {section}{\numberline {2}Intro}{4}{section.2}%
+\contentsline {section}{\numberline {3}Core Concepts in Metrology}{5}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Responsibility of the Experimenter}{5}{subsection.3.1}%
+\contentsline {section}{\numberline {4}Scope}{7}{section.4}%
+\contentsline {section}{\numberline {5}Preparation - Before measurements are performed}{8}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Define the Quantity}{8}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Expected Results and Required Instruments}{9}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Selection and Documentation of Measurement Method}{10}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Calibration}{11}{subsection.5.4}%
+\contentsline {section}{\numberline {6}During Measurements}{12}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Records}{12}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Stability}{12}{subsection.6.2}%
+\contentsline {section}{\numberline {7}After Measurements}{13}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Data Storage and Accessibility}{13}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Analyze the Data}{13}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}General Estimation of Uncertainty}{13}{subsection.7.3}%
+\contentsline {subsection}{\numberline {7.4}Review and Update Measurement Procedure}{14}{subsection.7.4}%
+\contentsline {subsection}{\numberline {7.5}Publication}{14}{subsection.7.5}%
+\contentsline {section}{\numberline {8}References}{16}{section.8}%
+\contentsline {section}{\numberline {9}Roles and Responsibilities}{16}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Student}{16}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}Supervisor}{16}{subsection.9.2}%
+\contentsline {section}{\numberline {10}Miscellaneous}{16}{section.10}%

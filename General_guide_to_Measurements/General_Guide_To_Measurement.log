@@ -1,10 +1,10 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.11.23)  9 MAR 2026 17:51
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.11.23)  25 MAR 2026 16:56
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**c:/Users/TK32FF/Desktop/UNI_data_collection/General_guide_to_Measurements/General_Guide_To_Measurement.tex
-(c:/Users/TK32FF/Desktop/UNI_data_collection/General_guide_to_Measurements/General_Guide_To_Measurement.tex
+**c:/Users/TK32FF/Desktop/GIT_FOLDER/UNI_data_collection/General_guide_to_Measurements/General_Guide_To_Measurement.tex
+(c:/Users/TK32FF/Desktop/GIT_FOLDER/UNI_data_collection/General_guide_to_Measurements/General_Guide_To_Measurement.tex
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-10-24>
 (C:\Users\TK32FF\AppData\Local\Programs\MiKTeX\tex/latex/base\article.cls
@@ -276,7 +276,7 @@ Package: parskip 2021-03-14 v2.0h non-zero parskip adjustments
 ) (C:\Users\TK32FF\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdftex.def
 File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count321
-) (General_Guide_To_Measurement.aux (Sections/Purpose/Purpose.aux) (Sections/Intro/Intro.aux) (Sections/Metrology/Metrology.aux))
+) (General_Guide_To_Measurement.aux (Sections/Author/Author.aux) (Sections/Purpose/Purpose.aux) (Sections/Intro/Intro.aux) (Sections/Metrology/Metrology.aux) (Sections/Scope/Scope.aux) (Sections/Preparation/Preparation.aux) (Sections/During_Measurements.tex/During.aux) (Sections/After_Measurements/After_Measurements.aux))
 \openout1 = `General_Guide_To_Measurement.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 18.
@@ -363,47 +363,87 @@ Package hyperref Info: Link coloring OFF on input line 18.
  [1
 
 {C:/Users/TK32FF/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
+\openout2 = `Sections/Author/Author.aux'.
+
+ (Sections/Author/Author.tex) [2
+
+]
 \openout2 = `Sections/Purpose/Purpose.aux'.
 
- (Sections/Purpose/Purpose.tex) [2
+ (Sections/Purpose/Purpose.tex) [3
+
+
 
 ]
 \openout2 = `Sections/Intro/Intro.aux'.
 
- (Sections/Intro/Intro.tex) [3
+ (Sections/Intro/Intro.tex) [4
 
 
 
 ]
 \openout2 = `Sections/Metrology/Metrology.aux'.
 
- (Sections/Metrology/Metrology.tex [4
+ (Sections/Metrology/Metrology.tex [5
 
 
 
-]) [5] [6
+]) [6]
+\openout2 = `Sections/Scope/Scope.aux'.
+
+ (Sections/Scope/Scope.tex
+Overfull \hbox (0.28152pt too wide) in paragraph at lines 15--16
+[]\OT1/cmr/m/n/12 Ensure that the re-quired in-stru-ments are cal-i-brated or ver-i-fied against a trusted
+ []
+
+) [7
 
 
-] [7] [8] (General_Guide_To_Measurement.aux (Sections/Purpose/Purpose.aux) (Sections/Intro/Intro.aux) (Sections/Metrology/Metrology.aux))
+
+]
+\openout2 = `Sections/Preparation/Preparation.aux'.
+
+ (Sections/Preparation/Preparation.tex (Sections/Preparation/a.tex [8
+
+
+
+]) (Sections/Preparation/b.tex) (Sections/Preparation/c.tex [9]) (Sections/Preparation/d.tex [10])) [11]
+\openout2 = `Sections/During_Measurements.tex/During.aux'.
+
+ (Sections/During_Measurements.tex/During.tex) [12
+
+
+
+]
+\openout2 = `Sections/After_Measurements/After_Measurements.aux'.
+
+ (Sections/After_Measurements/After_Measurements.tex [13
+
+
+
+]) [14] [15] [16
+
+
+] (General_Guide_To_Measurement.aux (Sections/Author/Author.aux) (Sections/Purpose/Purpose.aux) (Sections/Intro/Intro.aux) (Sections/Metrology/Metrology.aux) (Sections/Scope/Scope.aux) (Sections/Preparation/Preparation.aux) (Sections/During_Measurements.tex/During.aux) (Sections/After_Measurements/After_Measurements.aux))
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-10-24>
  ***********
 Package rerunfilecheck Info: File `General_Guide_To_Measurement.out' has not changed.
-(rerunfilecheck)             Checksum: 02A05042E18332F3C3B2860838B3725E;1785.
+(rerunfilecheck)             Checksum: D3183D4E56E244DEB6E704701381A150;3818.
  ) 
 Here is how much of TeX's memory you used:
- 10321 strings out of 467871
- 164060 string characters out of 5417891
- 586152 words of memory out of 5000000
- 39008 multiletter control sequences out of 15000+600000
+ 10502 strings out of 467871
+ 173178 string characters out of 5417891
+ 592914 words of memory out of 5000000
+ 39119 multiletter control sequences out of 15000+600000
  634698 words of font info for 64 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,6n,79p,729b,572s stack positions out of 10000i,1000n,20000p,200000b,200000s
- <C:\Users\TK32FF\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1200.pk><C:/Users/TK32FF/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/TK32FF/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/TK32FF/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/TK32FF/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti12.pfb>
-Output written on General_Guide_To_Measurement.pdf (8 pages, 96377 bytes).
+ 75i,6n,79p,854b,449s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ <C:\Users\TK32FF\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1200.pk><C:/Users/TK32FF/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/TK32FF/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/TK32FF/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/TK32FF/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/TK32FF/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/TK32FF/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti12.pfb>
+Output written on General_Guide_To_Measurement.pdf (16 pages, 142051 bytes).
 PDF statistics:
- 175 PDF objects out of 1000 (max. 8388607)
- 54 named destinations out of 1000 (max. 500000)
- 105 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 270 PDF objects out of 1000 (max. 8388607)
+ 67 named destinations out of 1000 (max. 500000)
+ 193 words of extra memory for PDF output out of 10000 (max. 10000000)
 
