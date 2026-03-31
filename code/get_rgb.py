@@ -192,7 +192,7 @@ def main():
 
         session_id = 1
         distance_mm = 20
-        target_id = "white"
+        target_id = "GARBAGE"
 
         currents = [500,1000,2000,4000, 8000]
         tx_currents = [0]*len(currents)
