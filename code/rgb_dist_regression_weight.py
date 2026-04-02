@@ -101,6 +101,18 @@ agg["u_G"] = agg["G_std"] / np.sqrt(agg["G_n"].clip(lower=1))
 agg["u_B"] = agg["B_std"] / np.sqrt(agg["B_n"].clip(lower=1))
 
 # -----------------------------
+# Current uncertainty
+# -----------------------------
+# Your stated current uncertainty is 0.040 mA.
+# Since the column is current_uA, convert to microamps:
+CURRENT_UNCERTAINTY_UA = 40.0   # 0.040 mA = 40 µA
+
+# Optional: if your current column is actually in mA, use:
+# CURRENT_UNCERTAINTY_UA = 0.040
+
+agg["u_current"] = CURRENT_UNCERTAINTY_UA
+
+# -----------------------------
 # Derived means
 # -----------------------------
 agg["ambient"] = agg["ambient_mean"]
@@ -120,7 +132,7 @@ agg = agg[
 # -----------------------------
 agg = agg[
     (agg["distance_mm"] >= 20) &
-    (agg["distance_mm"] <= 140)
+    (agg["distance_mm"] <= 200)
 ].copy()
 
 # -----------------------------
@@ -129,7 +141,7 @@ agg = agg[
 agg["log_total"] = np.log(agg["total"] + eps)
 agg["log_current"] = np.log(agg["current_uA"] + eps)
 agg["log_ambient"] = np.log(agg["ambient"] + eps)
-agg["log_distance"] = np.log(agg["distance_mm"] + eps)
+# agg["log_distance"] = np.log(agg["distance_mm"] + eps)
 
 agg["R_norm"] = agg["R"] / (agg["total"] + eps)
 agg["G_norm"] = agg["G"] / (agg["total"] + eps)
@@ -143,12 +155,15 @@ agg["log_R_over_G"] = np.log(agg["R_over_G"] + eps)
 agg["log_R_over_B"] = np.log(agg["R_over_B"] + eps)
 agg["log_G_over_B"] = np.log(agg["G_over_B"] + eps)
 
+agg["inv_sqrt_total"] = 1.0 / np.sqrt(agg["total"]+eps)
+
 # -----------------------------
 # Uncertainty propagation
 # -----------------------------
 agg["u_total"] = np.sqrt(agg["u_R"]**2 + agg["u_G"]**2 + agg["u_B"]**2)
 agg["u_log_total"] = agg["u_total"] / (agg["total"] + eps)
 agg["u_log_ambient"] = agg["u_ambient"] / (agg["ambient"] + eps)
+agg["u_log_current"] = agg["u_current"] / (agg["current_uA"] + eps)
 
 agg["u_log_R_over_G"] = np.sqrt(
     (agg["u_R"] / (agg["R"] + eps))**2 +
@@ -170,6 +185,7 @@ agg["u_log_G_over_B"] = np.sqrt(
 # -----------------------------
 agg["u_sample"] = np.sqrt(
     agg["u_log_total"]**2 +
+    agg["u_log_current"]**2 +   # <-- added current contribution
     agg["u_log_R_over_G"]**2 +
     agg["u_log_R_over_B"]**2 +
     agg["u_log_G_over_B"]**2
@@ -199,11 +215,13 @@ base_features = [
     "G_over_B",
     "log_R_over_G",
     "log_R_over_B",
-    "log_G_over_B"
+    "log_G_over_B",
+    "inv_sqrt_total"
 ]
 
 X = pd.concat([agg[base_features], color_dummies], axis=1)
-y = agg["log_distance"]
+# y = agg["log_distance"]
+y = agg["distance_mm"]
 y_mm = agg["distance_mm"]
 w = agg["sample_weight"]
 
@@ -212,6 +230,12 @@ feature_columns = X.columns.tolist()
 # -----------------------------
 # Train/test split
 # -----------------------------
+# X_train, X_test, y_train, y_test, y_train_mm, y_test_mm, w_train, w_test = train_test_split(
+#     X, y, y_mm, w,
+#     test_size=0.2,
+#     random_state=42,
+#     stratify=agg["distance_mm"]
+# )
 X_train, X_test, y_train, y_test, y_train_mm, y_test_mm, w_train, w_test = train_test_split(
     X, y, y_mm, w,
     test_size=0.2,
@@ -220,12 +244,32 @@ X_train, X_test, y_train, y_test, y_train_mm, y_test_mm, w_train, w_test = train
 )
 
 # -----------------------------
+# Train/Test split by distance range
+# -----------------------------
+train_mask = (agg["distance_mm"] >= 20) & (agg["distance_mm"] < 60)
+test_mask  = (agg["distance_mm"] >= 80) & (agg["distance_mm"] <= 120)
+
+X_train = X[train_mask]
+y_train = y[train_mask]
+y_train_mm = y_mm[train_mask]
+w_train = w[train_mask]
+
+X_test = X[test_mask]
+y_test = y[test_mask]
+y_test_mm = y_mm[test_mask]
+w_test = w[test_mask]
+
+print("Train distances:", sorted(np.unique(y_train_mm)))
+print("Test distances:", sorted(np.unique(y_test_mm)))
+
+
+# -----------------------------
 # XGBoost regressor
 # -----------------------------
 model = xgb.XGBRegressor(
-    n_estimators=100000,
-    max_depth=2,
-    learning_rate=0.03,
+    n_estimators=5000,
+    max_depth=8,
+    learning_rate=0.02,
     min_child_weight=1,
     gamma=0.00,
     reg_alpha=0.0,
@@ -241,9 +285,10 @@ model.fit(X_train, y_train, sample_weight=w_train)
 # -----------------------------
 # Predictions
 # -----------------------------
-y_pred_log = model.predict(X_test)
-y_pred_mm = np.exp(y_pred_log)
-y_test_mm = np.array(y_test_mm)
+# y_pred_log = model.predict(X_test)
+# y_pred_mm = np.exp(y_pred_log)
+y_pred_mm = model.predict(X_test)
+# y_test_mm = np.array(y_test_mm)
 
 # -----------------------------
 # Evaluation
@@ -262,6 +307,10 @@ print("Test distances:", sorted(np.unique(y_test_mm)))
 
 print("\nWeight statistics:")
 print(agg["sample_weight"].describe())
+
+print("\nCurrent uncertainty settings:")
+print(f"Current uncertainty: {CURRENT_UNCERTAINTY_UA:.3f} µA")
+print("Allowed current steps (mA): 0.5, 1, 2, 4, 8")
 
 # -----------------------------
 # Save model + feature columns
@@ -301,6 +350,9 @@ plt.grid(True)
 plt.tight_layout()
 plt.show()
 
+print(f"MAE:  {mae:.2f} mm")
+print(f"RMSE: {rmse:.2f} mm")
+
 # -----------------------------
 # Plot: Residual vs Distance
 # -----------------------------
@@ -311,10 +363,12 @@ plt.scatter(y_test_mm, residual, alpha=0.7)
 plt.axhline(0, linestyle="--")
 plt.xlabel("True Distance (mm)")
 plt.ylabel("Residual (Predicted - True) (mm)")
-plt.title("Residual vs Distance")
+plt.title("Residual vs Distance (Weighted)")
+plt.ylim(-100, 100)
 plt.grid(True)
 plt.tight_layout()
 plt.show()
+
 
 # -----------------------------
 # Feature importance
@@ -329,3 +383,5 @@ plt.ylabel("Importance")
 plt.title("Feature Importance - Weighted-Uncertainty Distance Model")
 plt.tight_layout()
 plt.show()
+
+

@@ -251,11 +251,11 @@ X_train, X_test, y_train, y_test = train_test_split(
 # XGBoost classifier
 # -----------------------------
 model = xgb.XGBClassifier(
-    n_estimators=1000,
-    max_depth=5,
+    n_estimators=1500,
+    max_depth=8,
     learning_rate=0.05,
     min_child_weight=1,
-    gamma=0.05,
+    gamma=0.00,
     reg_alpha=0.0,
     reg_lambda=1.0,
     subsample=0.8,

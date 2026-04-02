@@ -53,15 +53,17 @@ numeric_cols = [
 for col in numeric_cols:
     df[col] = pd.to_numeric(df[col], errors="coerce")
 
-# Keep target_id as string/category
+# Keep target_id as string
 df["target_id"] = df["target_id"].astype(str)
 
-# Drop rows with missing critical values
+# -----------------------------
+# Drop invalid rows
+# -----------------------------
 df = df.dropna(subset=[
     "distance_mm", "current_uA", "ambient", "R", "G", "B", "target_id"
 ]).copy()
 
-# Recompute total safely
+# Recompute total
 df["total"] = df["R"] + df["G"] + df["B"]
 
 # Keep only physically valid rows
@@ -79,7 +81,6 @@ grouped = df.groupby(
     as_index=False
 ).mean(numeric_only=True)
 
-# Recompute total after grouping
 grouped["total"] = grouped["R"] + grouped["G"] + grouped["B"]
 grouped = grouped[
     (grouped["total"] > 0) &
@@ -96,7 +97,6 @@ grouped["log_total"] = np.log(grouped["total"] + eps)
 grouped["log_current"] = np.log(grouped["current_uA"] + eps)
 grouped["log_ambient"] = np.log(grouped["ambient"] + eps)
 
-# Spectral / material features
 grouped["R_norm"] = grouped["R"] / (grouped["total"] + eps)
 grouped["G_norm"] = grouped["G"] / (grouped["total"] + eps)
 grouped["B_norm"] = grouped["B"] / (grouped["total"] + eps)
@@ -115,7 +115,7 @@ grouped["log_G_over_B"] = np.log(grouped["G_over_B"] + eps)
 features = [
     "log_total",
     "log_current",
-    "log_ambient",
+    # "log_ambient",   # uncomment if you want to include ambient
     "R_norm",
     "G_norm",
     "B_norm",
@@ -130,7 +130,9 @@ features = [
 X = grouped[features]
 y = grouped["target_id"]
 
-# Encode class labels
+# -----------------------------
+# Encode labels
+# -----------------------------
 label_encoder = LabelEncoder()
 y_encoded = label_encoder.fit_transform(y)
 
@@ -149,11 +151,11 @@ X_train, X_test, y_train, y_test = train_test_split(
 # XGBoost classifier
 # -----------------------------
 model = xgb.XGBClassifier(
-    n_estimators=1000,
-    max_depth=5,
+    n_estimators=1500,
+    max_depth=8,
     learning_rate=0.05,
     min_child_weight=1,
-    gamma=0.05,
+    gamma=0.0,
     reg_alpha=0.0,
     reg_lambda=1.0,
     subsample=0.8,
@@ -161,7 +163,8 @@ model = xgb.XGBClassifier(
     objective="multi:softprob",
     num_class=len(label_encoder.classes_),
     eval_metric="mlogloss",
-    random_state=42
+    random_state=42,
+    use_label_encoder=False
 )
 
 model.fit(X_train, y_train)
@@ -199,10 +202,24 @@ print("Saved label encoder to label_encoder.pkl")
 # -----------------------------
 # Confusion matrix
 # -----------------------------
-cm = confusion_matrix(y_test_labels, y_pred_labels, labels=label_encoder.classes_)
+cm = confusion_matrix(
+    y_test_labels,
+    y_pred_labels,
+    labels=label_encoder.classes_
+)
+
+print("\nConfusion Matrix:")
+print(pd.DataFrame(
+    cm,
+    index=[f"true_{c}" for c in label_encoder.classes_],
+    columns=[f"pred_{c}" for c in label_encoder.classes_]
+))
 
 fig, ax = plt.subplots(figsize=(8, 7))
-disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=label_encoder.classes_)
+disp = ConfusionMatrixDisplay(
+    confusion_matrix=cm,
+    display_labels=label_encoder.classes_
+)
 disp.plot(ax=ax, cmap="Blues", xticks_rotation=45, colorbar=False)
 plt.title("Confusion Matrix - Color Classifier")
 plt.tight_layout()
@@ -223,7 +240,7 @@ plt.tight_layout()
 plt.show()
 
 # -----------------------------
-# Optional: predicted probabilities
+# Predicted probabilities
 # -----------------------------
 probs = model.predict_proba(X_test)
 

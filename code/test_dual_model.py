@@ -135,10 +135,35 @@ def main():
         model_cls = xgb.XGBClassifier()
         model_reg = xgb.XGBRegressor()
 
-        model_cls.load_model("color_classifier_uncertainty.json")
+        # model_cls.load_model("color_classifier_uncertainty.json")
+        model_cls.load_model("color_classifier_weighted_uncertainty.json")
         model_reg.load_model("distance_model_weighted_uncertainty.json")
 
         cls_feature_columns = [
+            # "log_total",
+            # "log_current",
+            # # "log_ambient",
+            # "R_norm",
+            # "G_norm",
+            # "B_norm",
+            # "R_over_G",
+            # "R_over_B",
+            # "G_over_B",
+            # "log_R_over_G",
+            # "log_R_over_B",
+            # "log_G_over_B",
+            # "u_total",
+            # "u_log_total",
+            # # "u_log_ambient",
+            # "u_R_norm",
+            # "u_G_norm",
+            # "u_B_norm",
+            # "u_R_over_G",
+            # "u_R_over_B",
+            # "u_G_over_B",
+            # "u_log_R_over_G",
+            # "u_log_R_over_B",
+            # "u_log_G_over_B"
             "log_total",
             "log_current",
             # "log_ambient",
@@ -150,19 +175,7 @@ def main():
             "G_over_B",
             "log_R_over_G",
             "log_R_over_B",
-            "log_G_over_B",
-            "u_total",
-            "u_log_total",
-            # "u_log_ambient",
-            "u_R_norm",
-            "u_G_norm",
-            "u_B_norm",
-            "u_R_over_G",
-            "u_R_over_B",
-            "u_G_over_B",
-            "u_log_R_over_G",
-            "u_log_R_over_B",
-            "u_log_G_over_B"
+            "log_G_over_B"
         ]
 
 
@@ -245,10 +258,37 @@ def main():
             # -----------------------------
             # Classifier features (24 features)
             # -----------------------------
+            # features_cls = pd.DataFrame([{
+            #     "log_total": log_total,
+            #     "log_current": log_current,
+            #     # "log_ambient": log_ambient,
+            #     "R_norm": R_norm,
+            #     "G_norm": G_norm,
+            #     "B_norm": B_norm,
+            #     "R_over_G": R_over_G,
+            #     "R_over_B": R_over_B,
+            #     "G_over_B": G_over_B,
+            #     "log_R_over_G": log_R_over_G,
+            #     "log_R_over_B": log_R_over_B,
+            #     "log_G_over_B": log_G_over_B,
+            #     "u_total": u_total,
+            #     "u_log_total": u_log_total,
+            #     # "u_log_ambient": u_log_ambient,
+            #     "u_R_norm": u_R_norm,
+            #     "u_G_norm": u_G_norm,
+            #     "u_B_norm": u_B_norm,
+            #     "u_R_over_G": u_R_over_G,
+            #     "u_R_over_B": u_R_over_B,
+            #     "u_G_over_B": u_G_over_B,
+            #     "u_log_R_over_G": u_log_R_over_G,
+            #     "u_log_R_over_B": u_log_R_over_B,
+            #     "u_log_G_over_B": u_log_G_over_B
+            # }])
+
             features_cls = pd.DataFrame([{
                 "log_total": log_total,
                 "log_current": log_current,
-                # "log_ambient": log_ambient,
+                # "log_ambient",
                 "R_norm": R_norm,
                 "G_norm": G_norm,
                 "B_norm": B_norm,
@@ -257,20 +297,9 @@ def main():
                 "G_over_B": G_over_B,
                 "log_R_over_G": log_R_over_G,
                 "log_R_over_B": log_R_over_B,
-                "log_G_over_B": log_G_over_B,
-                "u_total": u_total,
-                "u_log_total": u_log_total,
-                # "u_log_ambient": u_log_ambient,
-                "u_R_norm": u_R_norm,
-                "u_G_norm": u_G_norm,
-                "u_B_norm": u_B_norm,
-                "u_R_over_G": u_R_over_G,
-                "u_R_over_B": u_R_over_B,
-                "u_G_over_B": u_G_over_B,
-                "u_log_R_over_G": u_log_R_over_G,
-                "u_log_R_over_B": u_log_R_over_B,
-                "u_log_G_over_B": u_log_G_over_B
+                "log_G_over_B": log_G_over_B
             }])
+
 
             features_cls = features_cls[cls_feature_columns]
 

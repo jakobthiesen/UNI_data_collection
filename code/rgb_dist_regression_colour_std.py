@@ -116,10 +116,10 @@ agg = agg[
 ].copy()
 
 # Optional: train only on 20 mm to 140 mm
-# agg = agg[
-#     (agg["distance_mm"] >= 20) &
-#     (agg["distance_mm"] <= 140)
-# ].copy()
+agg = agg[
+    (agg["distance_mm"] >= 20) &
+    (agg["distance_mm"] <= 160)
+].copy()
 
 # -----------------------------
 # Feature engineering
@@ -253,11 +253,11 @@ X_train, X_test, y_train, y_test, y_train_mm, y_test_mm = train_test_split(
 # XGBoost regressor
 # -----------------------------
 model = xgb.XGBRegressor(
-    n_estimators=5000,
+    n_estimators=10000,
     max_depth=2,
     learning_rate=0.05,
     min_child_weight=1,
-    gamma=0.005,
+    gamma=0.00,
     reg_alpha=0.0,
     reg_lambda=1.0,
     subsample=0.8,
@@ -265,7 +265,6 @@ model = xgb.XGBRegressor(
     objective="reg:squarederror",
     random_state=42
 )
-
 model.fit(X_train, y_train)
 
 # -----------------------------
@@ -339,6 +338,7 @@ plt.axhline(0, linestyle="--")
 plt.xlabel("True Distance (mm)")
 plt.ylabel("Residual (Predicted - True) (mm)")
 plt.title("Residual vs Distance")
+plt.ylim(-100,100)
 plt.grid(True)
 plt.tight_layout()
 plt.show()

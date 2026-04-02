@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import xgboost as xgb
 import pickle
 
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
 # -----------------------------
@@ -80,11 +79,11 @@ grouped = grouped[
     (grouped["distance_mm"] > 0)
 ].copy()
 
-# Keep only distances 20 mm to 140 mm
-# grouped = grouped[
-#     (grouped["distance_mm"] >= 20) &
-#     (grouped["distance_mm"] <= 140)
-# ].copy()
+# Keep only distances 20 mm to 200 mm
+grouped = grouped[
+    (grouped["distance_mm"] >= 20) &
+    (grouped["distance_mm"] <= 200)
+].copy()
 
 # -----------------------------
 # Feature engineering
@@ -94,7 +93,7 @@ eps = 1e-9
 grouped["log_total"] = np.log(grouped["total"] + eps)
 grouped["log_current"] = np.log(grouped["current_uA"] + eps)
 grouped["log_ambient"] = np.log(grouped["ambient"] + eps)
-grouped["log_distance"] = np.log(grouped["distance_mm"] + eps)
+# grouped["log_distance"] = np.log(grouped["distance_mm"] + eps)
 
 # Spectral features
 grouped["R_norm"] = grouped["R"] / (grouped["total"] + eps)
@@ -108,6 +107,8 @@ grouped["G_over_B"] = grouped["G"] / (grouped["B"] + eps)
 grouped["log_R_over_G"] = np.log(grouped["R_over_G"] + eps)
 grouped["log_R_over_B"] = np.log(grouped["R_over_B"] + eps)
 grouped["log_G_over_B"] = np.log(grouped["G_over_B"] + eps)
+
+grouped["inv_sqrt_total"] = 1.0 / np.sqrt(grouped["total"]+eps)
 
 # -----------------------------
 # Add color/material as one-hot
@@ -129,35 +130,44 @@ base_features = [
     "G_over_B",
     "log_R_over_G",
     "log_R_over_B",
-    "log_G_over_B"
+    "log_G_over_B",
+    "inv_sqrt_total"
 ]
 
 X = pd.concat([grouped[base_features], color_dummies], axis=1)
-y = grouped["log_distance"]
-
-# Keep original mm target for reporting
+# y = grouped["log_distance"]
+y = grouped["distance_mm"]
 y_mm = grouped["distance_mm"]
 
 # Save feature columns so inference uses same order
 feature_columns = X.columns.tolist()
 
 # -----------------------------
-# Train/test split
+# Train/Test split by distance range
 # -----------------------------
-X_train, X_test, y_train, y_test, y_train_mm, y_test_mm = train_test_split(
-    X, y, y_mm,
-    test_size=0.2,
-    random_state=42,
-    stratify=grouped["distance_mm"]
-)
+train_mask = (grouped["distance_mm"] >= 20) & (grouped["distance_mm"] < 100)
+test_mask  = (grouped["distance_mm"] >= 120) & (grouped["distance_mm"] <= 160)
+
+X_train = X[train_mask]
+y_train = y[train_mask]
+y_train_mm = y_mm[train_mask]
+
+X_test = X[test_mask]
+y_test = y[test_mask]
+y_test_mm = y_mm[test_mask]
+
+print("Train distances:", sorted(np.unique(y_train_mm)))
+print("Test distances:", sorted(np.unique(y_test_mm)))
+print("Train size:", len(X_train))
+print("Test size:", len(X_test))
 
 # -----------------------------
 # XGBoost regressor
 # -----------------------------
 model = xgb.XGBRegressor(
-    n_estimators=25000,
-    max_depth=2,
-    learning_rate=0.05,
+    n_estimators=5000,
+    max_depth=8,
+    learning_rate=0.02,
     min_child_weight=1,
     gamma=0.00,
     reg_alpha=0.0,
@@ -167,14 +177,16 @@ model = xgb.XGBRegressor(
     objective="reg:squarederror",
     random_state=42
 )
+
 # Train on log-distance
 model.fit(X_train, y_train)
 
 # Predict in log-space
-y_pred_log = model.predict(X_test)
+# y_pred_log = model.predict(X_test)
+y_pred_mm = model.predict(X_test)
 
 # Convert back to mm
-y_pred_mm = np.exp(y_pred_log)
+# y_pred_mm = np.exp(y_pred_log)
 y_test_mm = np.array(y_test_mm)
 
 # -----------------------------
@@ -188,9 +200,6 @@ print(f"Train samples: {len(X_train)}")
 print(f"Test samples: {len(X_test)}")
 print(f"MAE:  {mae:.2f} mm")
 print(f"RMSE: {rmse:.2f} mm")
-
-print("Train distances:", sorted(np.unique(y_train_mm)))
-print("Test distances:", sorted(np.unique(y_test_mm)))
 
 # -----------------------------
 # Save model + feature columns
@@ -240,6 +249,7 @@ plt.scatter(y_test_mm, residual, alpha=0.7)
 plt.axhline(0, linestyle="--")
 plt.xlabel("True Distance (mm)")
 plt.ylabel("Residual (Predicted - True) (mm)")
+plt.ylim(-100, 100)
 plt.title("Residual vs Distance")
 plt.grid(True)
 plt.tight_layout()

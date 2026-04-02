@@ -122,6 +122,12 @@ agg = agg[
     (agg["distance_mm"] > 0)
 ].copy()
 
+agg = agg[
+    (agg["distance_mm"] >= 20) &
+    (agg["distance_mm"] <= 160)
+].copy()
+
+
 # -----------------------------
 # Uncertainty propagation
 # -----------------------------
@@ -193,7 +199,7 @@ agg["sample_weight"] = agg["sample_weight"].clip(lower=0.1, upper=10.0)
 features = [
     "log_total",
     "log_current",
-    "log_ambient",
+    # "log_ambient",
     "R_norm",
     "G_norm",
     "B_norm",
@@ -229,11 +235,11 @@ X_train, X_test, y_train, y_test, w_train, w_test = train_test_split(
 # XGBoost classifier
 # -----------------------------
 model = xgb.XGBClassifier(
-    n_estimators=1000,
-    max_depth=5,
+    n_estimators=1500,
+    max_depth=8,
     learning_rate=0.05,
     min_child_weight=1,
-    gamma=0.05,
+    gamma=0.00,
     reg_alpha=0.0,
     reg_lambda=1.0,
     subsample=0.8,
