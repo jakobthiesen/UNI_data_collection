@@ -190,17 +190,18 @@ def main():
 
         n_samples = 25
 
-        session_id = 2
-        distance_mm = 30
-        target_id = "black"
+        session_id = 3
+        distance_mm = 75
+        target_id = "orange"
 
-        currents = [500,1000,2000,4000, 8000]
+        # currents = [500,1000,2000,4000, 8000]
+        currents = [4000, 8000]
         tx_currents = [0]*len(currents)
         for n in range(len(tx_currents)):
             tx_currents[n] = int(currents[n]/39.2157)
         # print(tx_currents)
 
-        for i in range(5):
+        for i in range(15):
             for n in range(len(currents)):
                 current = currents[n]
                 tx_current = tx_currents[n]

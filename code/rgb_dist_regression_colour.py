@@ -5,6 +5,7 @@ import xgboost as xgb
 import pickle
 
 from sklearn.metrics import mean_absolute_error, mean_squared_error
+from sklearn.model_selection import train_test_split
 
 # -----------------------------
 # Load data
@@ -54,6 +55,9 @@ df = df.dropna(subset=[
     "distance_mm", "current_uA", "ambient", "R", "G", "B", "target_id"
 ]).copy()
 
+# # 👉 EXCLUDE BLACK HERE
+# df = df[df["target_id"] != "black"].copy()
+
 # Recompute total safely
 df["total"] = df["R"] + df["G"] + df["B"]
 
@@ -82,7 +86,7 @@ grouped = grouped[
 # Keep only distances 20 mm to 200 mm
 grouped = grouped[
     (grouped["distance_mm"] >= 20) &
-    (grouped["distance_mm"] <= 200)
+    (grouped["distance_mm"] <= 80)
 ].copy()
 
 # -----------------------------
@@ -93,7 +97,6 @@ eps = 1e-9
 grouped["log_total"] = np.log(grouped["total"] + eps)
 grouped["log_current"] = np.log(grouped["current_uA"] + eps)
 grouped["log_ambient"] = np.log(grouped["ambient"] + eps)
-# grouped["log_distance"] = np.log(grouped["distance_mm"] + eps)
 
 # Spectral features
 grouped["R_norm"] = grouped["R"] / (grouped["total"] + eps)
@@ -108,7 +111,7 @@ grouped["log_R_over_G"] = np.log(grouped["R_over_G"] + eps)
 grouped["log_R_over_B"] = np.log(grouped["R_over_B"] + eps)
 grouped["log_G_over_B"] = np.log(grouped["G_over_B"] + eps)
 
-grouped["inv_sqrt_total"] = 1.0 / np.sqrt(grouped["total"]+eps)
+grouped["inv_sqrt_total"] = 1.0 / np.sqrt(grouped["total"] + eps)
 
 # -----------------------------
 # Add color/material as one-hot
@@ -135,26 +138,32 @@ base_features = [
 ]
 
 X = pd.concat([grouped[base_features], color_dummies], axis=1)
-# y = grouped["log_distance"]
-y = grouped["distance_mm"]
-y_mm = grouped["distance_mm"]
+# y = grouped["distance_mm"]
+# y_mm = grouped["distance_mm"]
+
+
+
+
+grouped["log_distance"] = np.log(grouped["distance_mm"] + eps)
+
+y = grouped["log_distance"]
+y_mm = grouped["distance_mm"]  # keep for evaluation
+
 
 # Save feature columns so inference uses same order
 feature_columns = X.columns.tolist()
 
 # -----------------------------
-# Train/Test split by distance range
+# Train/Test split with stratification by distance
 # -----------------------------
-train_mask = (grouped["distance_mm"] >= 20) & (grouped["distance_mm"] < 100)
-test_mask  = (grouped["distance_mm"] >= 120) & (grouped["distance_mm"] <= 160)
-
-X_train = X[train_mask]
-y_train = y[train_mask]
-y_train_mm = y_mm[train_mask]
-
-X_test = X[test_mask]
-y_test = y[test_mask]
-y_test_mm = y_mm[test_mask]
+X_train, X_test, y_train, y_test, y_train_mm, y_test_mm = train_test_split(
+    X,
+    y,
+    y_mm,
+    test_size=0.2,
+    random_state=42,
+    stratify=grouped["distance_mm"]
+)
 
 print("Train distances:", sorted(np.unique(y_train_mm)))
 print("Test distances:", sorted(np.unique(y_test_mm)))
@@ -165,9 +174,9 @@ print("Test size:", len(X_test))
 # XGBoost regressor
 # -----------------------------
 model = xgb.XGBRegressor(
-    n_estimators=5000,
-    max_depth=8,
-    learning_rate=0.02,
+    n_estimators=2000,
+    max_depth=6,
+    learning_rate=0.05,
     min_child_weight=1,
     gamma=0.00,
     reg_alpha=0.0,
@@ -178,16 +187,33 @@ model = xgb.XGBRegressor(
     random_state=42
 )
 
-# Train on log-distance
 model.fit(X_train, y_train)
 
-# Predict in log-space
-# y_pred_log = model.predict(X_test)
-y_pred_mm = model.predict(X_test)
+# y_pred_mm = model.predict(X_test)
+# y_test_mm = np.array(y_test_mm)
 
-# Convert back to mm
-# y_pred_mm = np.exp(y_pred_log)
-y_test_mm = np.array(y_test_mm)
+y_pred_log = model.predict(X_test)
+y_pred_mm = np.exp(y_pred_log)
+
+# -----------------------------
+# Limit evaluation range
+# -----------------------------
+mask_0_120 = (y_test_mm >= 0) & (y_test_mm <= 120)
+
+y_test_sel = y_test_mm[mask_0_120]
+y_pred_sel = y_pred_mm[mask_0_120]
+
+# -----------------------------
+# Relative error statistics (0–120 mm)
+# -----------------------------
+relative_error = np.abs(y_pred_sel - y_test_sel)
+percent_error = 1.0 * relative_error
+
+n_total = len(y_test_mm)
+n_over_20pct = np.sum(percent_error > 10.0)
+frac_over_20pct = n_over_20pct / n_total
+
+
 
 # -----------------------------
 # Evaluation in mm
@@ -244,12 +270,17 @@ plt.show()
 # -----------------------------
 residual = y_pred_mm - y_test_mm
 
+print(f"Points with >20% error: {n_over_20pct} / {n_total}")
+print(f"Fraction with >20% error: {frac_over_20pct:.3f}")
+print(f"Percentage with >20% error: {100.0 * frac_over_20pct:.2f}%")
+
 plt.figure(figsize=(7, 6))
 plt.scatter(y_test_mm, residual, alpha=0.7)
 plt.axhline(0, linestyle="--")
 plt.xlabel("True Distance (mm)")
 plt.ylabel("Residual (Predicted - True) (mm)")
-plt.ylim(-100, 100)
+plt.ylim(-75, 75)
+plt.xlim(15,135)
 plt.title("Residual vs Distance")
 plt.grid(True)
 plt.tight_layout()
@@ -266,5 +297,19 @@ plt.bar(np.array(feature_columns)[order], importance[order])
 plt.xticks(rotation=60, ha="right")
 plt.ylabel("Importance")
 plt.title("Feature Importance - Distance Model with Color")
+plt.tight_layout()
+plt.show()
+
+plt.figure(figsize=(7, 6))
+plt.scatter(y_test_mm, y_pred_mm, alpha=0.7)
+plt.plot([y_mm.min(), y_mm.max()], [y_mm.min(), y_mm.max()], "r--")
+
+plt.xscale("log")
+plt.yscale("log")
+
+plt.xlabel("True Distance (mm)")
+plt.ylabel("Predicted Distance (mm)")
+plt.title("Log-Log XGBoost Distance Model")
+plt.grid(True, which="both")
 plt.tight_layout()
 plt.show()
