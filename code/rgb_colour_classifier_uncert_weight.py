@@ -16,7 +16,7 @@ from sklearn.preprocessing import LabelEncoder
 # -----------------------------
 # Load data
 # -----------------------------
-df = pd.read_csv("rgb_data.csv", header=None)
+df = pd.read_csv("rgb_data_use.csv", header=None)
 
 df.columns = [
     "timestamp",
@@ -173,25 +173,55 @@ agg["u_log_G_over_B"] = np.sqrt(
     (agg["u_B"] / (agg["B"] + eps))**2
 )
 
+CURRENT_UNCERTAINTY_UA = 40.0   # 0.040 mA = 40 µA
+
+# Optional: if your current column is actually in mA, use:
+# CURRENT_UNCERTAINTY_UA = 0.040
+
+agg["u_current"] = CURRENT_UNCERTAINTY_UA
+agg["u_log_current"] = agg["u_current"] / (agg["current_uA"] + eps)
+
 # -----------------------------
 # Build scalar sample uncertainty
 # -----------------------------
 # Simple combined uncertainty score
+
+agg["u_R_inl"] = 4.0/agg["R_mean"]
+agg["u_G_inl"] = 4.0/agg["G_mean"]
+agg["u_B_inl"] = 4.0/agg["B_mean"]
+agg["u_amb_inl"] = 4.0/agg["ambient_mean"]
+agg["u_inl"] = np.sqrt(agg["u_R_inl"]**2 + agg["u_G_inl"]**2 +agg["u_B_inl"]**2 +agg["u_amb_inl"]**2)
+
+
 agg["u_sample"] = np.sqrt(
     agg["u_log_total"]**2 +
+    agg["u_log_current"]**2 +   # <-- added current contribution
+    agg["u_log_ambient"]**2+
     agg["u_log_R_over_G"]**2 +
     agg["u_log_R_over_B"]**2 +
-    agg["u_log_G_over_B"]**2
+    agg["u_log_G_over_B"]**2 +
+    agg["u_inl"]**2 
 )
 
 # Convert uncertainty to weight
-agg["sample_weight"] = 1.0 / (agg["u_sample"]**2 + 1e-9)
+# agg["sample_weight"] = 1.0 / (agg["u_sample"]**2 + 1e-9)
 
-# Normalize weights to mean 1
+# # Normalize weights to mean 1
+# agg["sample_weight"] = agg["sample_weight"] / agg["sample_weight"].mean()
+
+# # Clip weights to avoid a few samples dominating everything
+# agg["sample_weight"] = agg["sample_weight"].clip(lower=0.00001, upper=1000.0)
+
+u = agg["u_sample"].to_numpy()
+# Choose transition location from data
+u0 = np.percentile(u, 70)   # start downweighting around upper-middle uncertainty
+k = 25.0                    # steepness
+w_min = 0.05                # minimum weight floor
+
+agg["sample_weight"] = w_min + (1.0 - w_min) / (1.0 + np.exp(k * (u - u0)))
+
+# Optional normalization
 agg["sample_weight"] = agg["sample_weight"] / agg["sample_weight"].mean()
-
-# Clip weights to avoid a few samples dominating everything
-agg["sample_weight"] = agg["sample_weight"].clip(lower=0.1, upper=10.0)
 
 # -----------------------------
 # Select features
@@ -235,7 +265,7 @@ X_train, X_test, y_train, y_test, w_train, w_test = train_test_split(
 # XGBoost classifier
 # -----------------------------
 model = xgb.XGBClassifier(
-    n_estimators=1500,
+    n_estimators=2500,
     max_depth=8,
     learning_rate=0.05,
     min_child_weight=1,

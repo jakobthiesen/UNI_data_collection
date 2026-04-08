@@ -86,7 +86,7 @@ grouped = grouped[
 # Keep only distances 20 mm to 200 mm
 grouped = grouped[
     (grouped["distance_mm"] >= 20) &
-    (grouped["distance_mm"] <= 80)
+    (grouped["distance_mm"] <= 140)
 ].copy()
 
 # -----------------------------

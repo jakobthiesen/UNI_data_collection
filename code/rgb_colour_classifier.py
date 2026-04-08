@@ -16,7 +16,7 @@ from sklearn.preprocessing import LabelEncoder
 # -----------------------------
 # Load data
 # -----------------------------
-df = pd.read_csv("rgb_data.csv", header=None)
+df = pd.read_csv("rgb_data_use.csv", header=None)
 
 df.columns = [
     "timestamp",
@@ -85,7 +85,7 @@ grouped["total"] = grouped["R"] + grouped["G"] + grouped["B"]
 grouped = grouped[
     (grouped["total"] > 0) &
     (grouped["current_uA"] > 0) &
-    (grouped["distance_mm"] > 0)
+    (grouped["distance_mm"] <= 160)
 ].copy()
 
 # -----------------------------
@@ -151,7 +151,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 # XGBoost classifier
 # -----------------------------
 model = xgb.XGBClassifier(
-    n_estimators=1500,
+    n_estimators=2500,
     max_depth=8,
     learning_rate=0.05,
     min_child_weight=1,
