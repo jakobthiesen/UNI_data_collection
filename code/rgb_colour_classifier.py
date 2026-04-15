@@ -85,7 +85,7 @@ grouped["total"] = grouped["R"] + grouped["G"] + grouped["B"]
 grouped = grouped[
     (grouped["total"] > 0) &
     (grouped["current_uA"] > 0) &
-    (grouped["distance_mm"] <= 160)
+    (grouped["distance_mm"] <= 200)
 ].copy()
 
 # -----------------------------
